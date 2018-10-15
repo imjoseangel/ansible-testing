@@ -1,0 +1,37 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+lint:
+  name: yamllint
+  options:
+    config-file: ./molecule/default/yaml-lint.yml
+platforms:
+  - name: instance-1
+    box: ubuntu/trusty64
+  - name: instance-2
+    box: ubuntu/trusty64
+provisioner:
+  name: ansible
+  playbooks:
+    create: ../../molecule/create.yml
+    destroy: ../../molecule/destroy.yml
+    prepare: ../../molecule/prepare.yml
+  options:
+    vvv: True
+  inventory:
+    links:
+      group_vars: ../../../prod/group_vars
+  env:
+    ANSIBLE_ROLES_PATH: ../../roles
+  lint:
+    name: ansible-lint
+scenario:
+  name: prod
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
